@@ -1,0 +1,143 @@
+composer:
+    stage: composer
+    image: composer:latest
+    tags: [test-sast-docker]
+    variables:
+        SYMFONY_CACHE_WARMUP: 0
+    script:
+        - composer install --prefer-dist --dev --no-scripts --ignore-platform-reqs
+    artifacts:
+        paths:
+            - vendor
+        expire_in: 2 hrs
+        when: on_success
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "schedule"'    
+          when: never
+        - if: $CI_COMMIT_BRANCH
+          when: on_success
+syntax:
+    image: jakzal/phpqa
+    stage: test
+    tags: [test-sast-docker]
+    variables:
+        GIT_STRATEGY: none
+    dependencies:
+        - composer
+    script:
+        - find -type f \( -iname "*.php" \) -not -path "./*/test/*" -not -path "./.composer/*" -not -path "./vendor/*" -not -path "./storage/*" -print0 | xargs -0 -n1 php -l
+    allow_failure: true     
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "schedule"'    
+          when: never
+        - if: $CI_COMMIT_BRANCH
+          when: on_success
+           
+larastan:
+    image: jakzal/phpqa
+    stage: test
+    tags: [test-sast-docker]
+    script: phpstan analyse --memory-limit=2G
+    allow_failure: true
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "schedule"'    
+          when: never
+        - if: $CI_COMMIT_BRANCH
+          when: on_success
+
+php-metrics:
+    image: jakzal/phpqa
+    stage: test
+    tags: [test-sast-docker]
+    script: phpmetrics --report-html=var/php-metrics app
+    artifacts:
+        paths:
+           - var/php-metrics/
+    allow_failure: true
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "schedule"'    
+          when: never
+        - if: $CI_COMMIT_BRANCH
+          when: on_success
+
+php-phpmd:
+    image: jakzal/phpqa
+    stage: test
+    tags: [test-sast-docker]
+    script: 
+        - phpmd app text ./phpmd.xml
+        - phpmd app html ./phpmd.xml        
+    artifacts:
+        paths:
+            - var/phpmd.html
+    allow_failure: true
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "schedule"'    
+          when: never
+        - if: $CI_COMMIT_BRANCH
+          when: on_success
+    
+php-deprecation-detector:
+    image: jakzal/phpqa
+    stage: test
+    tags: [test-sast-docker]
+    script:
+        - deprecation-detector check app vendor
+    allow_failure: true
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "schedule"'    
+          when: never
+        - if: $CI_COMMIT_BRANCH
+          when: on_success
+
+php-cs-fixer:
+    image: jakzal/phpqa
+    stage: test
+    tags: [test-sast-docker]
+    script:
+        - php artisan fixer:fix --dry-run --path ./app/ --diff > patch.diff
+    artifacts:
+        paths:
+            - patch.diff
+        expire_in: 24 hrs
+        when: on_failure
+    allow_failure: true  
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "schedule"'    
+          when: never
+        - if: $CI_COMMIT_BRANCH
+          when: on_success
+    
+unit_feature_coverage_test:
+    image: jakzal/phpqa
+    stage: test
+    tags: [test-sast-docker]
+    dependencies:
+        - composer
+    script:
+        - rm database/test.sqlite -f ||  true
+        - touch database/test.sqlite -f 
+        - rm /var/www/database/test.sqlite -f ||  true
+        - if [ ! -d /var/www/database ]; then mkdir /var/www/database ; fi
+        - touch /var/www/database/test.sqlite -f  
+        - chmod 755 dockerSecretTesting.sh
+        - ./dockerSecretTesting.sh 
+        - php artisan migrate --seed --env=testing || true
+        #- php artisan db:seed --class=TestUserSeeder --env=testing
+        - vendor/phpunit/phpunit/phpunit --testdox-html var/logs/phpunit/report.html -vvv || true
+        - vendor/phpunit/phpunit/phpunit --testdox -v || true
+        #- vendor/phpunit/phpunit/phpunit  --coverage-text --colors=never -d memory_limit=2G || true
+        - phpdbg -qrr vendor/phpunit/phpunit/phpunit --coverage-text --colors=never -dmemory_limit=2G || true
+        - ls -al
+    artifacts: 
+        paths:
+            - var/logs/phpunit
+        expire_in: 24 hrs
+    #allow_failure: false   
+    #temporary
+    allow_failure: true
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "schedule"'    
+          when: never
+        - if: $CI_COMMIT_BRANCH
+          when: on_success

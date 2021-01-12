@@ -1,0 +1,47 @@
+.scheduler_template: &scheduler_definition 
+    variables:
+        DOCKER_DRIVER: overlay2
+        GIT_STRATEGY: none
+    dependencies: []
+    allow_failure: true
+    stage: scheduler
+ 
+# Monitor if website up
+.test_env_template: &test_env_definition 
+    <<: *scheduler_definition
+    rules:
+      - if: '$CI_PIPELINE_SOURCE == "schedule" && $PIPELINE_SCHEDULE_IDENTIFIER == "schedule test all environment"'
+
+# No dev env
+#test dev schedule:
+#    <<: *test_env_definition
+#    tags: [deploydev]
+#    script:
+#        - wget -q https://apps-science-dev.uottawa.ca/template/healthcheck --no-check-certificate -O - | grep 'Health check page'
+        
+test qa schedule:
+    <<: *test_env_definition
+    tags: [deployqa]
+    script:
+        - wget -q https://apps-science-qa.uottawa.ca/template/healthcheck --no-check-certificate -O - | grep 'Health check page'        
+
+test prod schedule:
+    <<: *test_env_definition
+    tags: [deployprod]
+    script:
+        - wget -q https://apps-science.uottawa.ca/template/healthcheck --no-check-certificate -O - | grep 'Health check page' 
+
+
+# Scan dependencies for known vulnerabilities    
+sensiolabs_cron:
+  variables:
+        DOCKER_DRIVER: overlay2
+  dependencies: []
+  allow_failure: true
+  stage: scheduler
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $PIPELINE_SCHEDULE_IDENTIFIER == "schedule nightly"'
+  script:
+    - wget https://get.symfony.com/cli/installer -O - | bash
+    - /home/gitlab-runner/.symfony/bin/symfony  security:check
+  tags: [test]

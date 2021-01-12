@@ -1,0 +1,279 @@
+# runners config: https://uottawa-csg.atlassian.net/wiki/spaces/KFAM/pages/82378823/GitLab+Runner+configuration 
+# Executor: shell
+
+variables:
+    DOCKER_DRIVER: overlay2
+
+
+include:
+  - local: '/ci/test-security-job.yml'
+  - local: '/ci/scheduler-job.yml'
+    
+stages:
+    - composer
+    - test
+    - deploy_qa
+    - deploy_prod
+    - scheduler
+    - report
+  
+.deploy_reload_template: &deploy_reload_definition  
+    script:
+        # copy workers and nginx config
+        - cp server/nginx/*.conf /srv/portal-apps-science/docker/nginx/config -f 
+        - cp server/php-worker/*.conf /srv/portal-apps-science/docker/php-worker/supervisord.d -f   
+        
+        # unlock swarm 
+        - echo $SWARM_UNLOCK_KEY | docker swarm unlock || true
+        
+        # keep track of current version
+        - if [ ! -d $APP_FOLDER ]; then mkdir $APP_FOLDER ; fi
+        - cd $APP_FOLDER
+        - rm v*.ver || true
+        - touch $CI_COMMIT_TAG.ver
+
+        # copy new files in new versions
+        - cd $CI_PROJECT_DIR
+        - mkdir -p $NEW_RELEASE_DIR
+        - cp . -rf $NEW_RELEASE_DIR
+        - mv $NEW_RELEASE_DIR/.env.ok $NEW_RELEASE_DIR/.env
+        # add version to env file
+        - sed '$ a VERSION=$CI_COMMIT_TAG' $NEW_RELEASE_DIR/.env
+        - cd $NEW_RELEASE_DIR 
+        
+        # composer install
+        - docker run --rm --volume $PWD:/app --user $(id -u):$(id -g) composer install --ignore-platform-reqs --prefer-dist --no-interaction --no-dev --no-scripts -o --no-progress --no-ansi --no-plugins --no-suggest
+        - docker run --rm --volume $PWD:/app --user $(id -u):$(id -g) composer dump-autoload --no-scripts --no-dev --optimize
+        
+        # copy over storage folder and set version to the current one, rebuild storage structure folder if needed
+        - rm -rf $NEW_RELEASE_DIR/storage
+        - if [ ! -d $APP_DIR_STORAGE ]; then mkdir $APP_DIR_STORAGE ; fi
+        - if [ ! -d $APP_DIR_STORAGE/app ]; then mkdir $APP_DIR_STORAGE/app ; fi
+        - if [ ! -d $APP_DIR_STORAGE/app/public ]; then mkdir $APP_DIR_STORAGE/app/public ; fi
+        - if [ ! -d $APP_DIR_STORAGE/session ]; then mkdir $APP_DIR_STORAGE/session ; fi
+        - if [ ! -d $APP_DIR_STORAGE/framework ]; then mkdir $APP_DIR_STORAGE/framework ; fi
+        - if [ ! -d $APP_DIR_STORAGE/framework/cache ]; then mkdir $APP_DIR_STORAGE/framework/cache ; fi
+        - if [ ! -d $APP_DIR_STORAGE/framework/cache/data ]; then mkdir $APP_DIR_STORAGE/framework/cache/data ; fi
+        - if [ ! -d $APP_DIR_STORAGE/framework/sessions ]; then mkdir $APP_DIR_STORAGE/framework/sessions ; fi
+        - if [ ! -d $APP_DIR_STORAGE/framework/views ]; then mkdir $APP_DIR_STORAGE/framework/views ; fi
+        - if [ ! -d $APP_DIR_STORAGE/logs ]; then mkdir $APP_DIR_STORAGE/logs ; fi
+        - cp $APP_DIR/storage/ $APP_DIR_STORAGE  -r || true
+        - rm -rf $APP_DIR/*
+        - cp $NEW_RELEASE_DIR/. $APP_DIR -rf
+        - mv $APP_DIR_STORAGE $APP_DIR/storage )
+        
+        # reload nginx config 
+        - CONTAINER_ID=$(docker ps --filter name=portal_nginx -q)
+        - docker container exec $CONTAINER_ID nginx -t
+        - docker container exec $CONTAINER_ID nginx -s reload
+        
+        # restart workers, clear cache/config, run migratation 
+        - CONTAINER_ID=$(docker ps --filter name=portal_php-fpm -q)
+        - docker container exec $(docker ps --filter name=portal_php-worker -q) supervisorctl stop all
+        - docker container exec $CONTAINER_ID chmod 755 /var/www/uottawa-template/startup-deploy.sh
+        - docker container exec $CONTAINER_ID /var/www/uottawa-template/startup-deploy.sh
+        - docker container exec $(docker ps --filter name=portal_php-worker -q) supervisorctl start all
+
+.deploy_restart_template: &deploy_restart_definition 
+    script:
+        # copy workers and nginx config
+        - cp server/nginx/*.conf /srv/portal-apps-science/docker/nginx/config -f 
+        - cp server/php-worker/*.conf /srv/portal-apps-science/docker/php-worker/supervisord.d -f   
+        
+        # unlock swarm 
+        - echo $SWARM_UNLOCK_KEY | docker swarm unlock || true
+        
+        # keep track of current version
+        - if [ ! -d $APP_FOLDER ]; then mkdir $APP_FOLDER ; fi
+        - cd $APP_FOLDER
+        - rm v*.ver || true
+        - touch $CI_COMMIT_TAG.ver
+
+        # copy new files in new versions
+        - cd $CI_PROJECT_DIR
+        - mkdir -p $NEW_RELEASE_DIR
+        - cp . -rf $NEW_RELEASE_DIR
+        - mv $NEW_RELEASE_DIR/.env.ok $NEW_RELEASE_DIR/.env
+        # add version to env file
+        - sed '$ a VERSION=$CI_COMMIT_TAG' $NEW_RELEASE_DIR/.env
+        - cd $NEW_RELEASE_DIR 
+        
+        # composer install
+        - docker run --rm --volume $PWD:/app --user $(id -u):$(id -g) composer install --ignore-platform-reqs --prefer-dist --no-interaction --no-dev --no-scripts -o --no-progress --no-ansi --no-plugins --no-suggest
+        - docker run --rm --volume $PWD:/app --user $(id -u):$(id -g) composer dump-autoload --no-scripts --no-dev --optimize
+        
+        # copy over storage folder and set version to the current one, rebuild storage structure folder if needed
+        - rm -rf $NEW_RELEASE_DIR/storage
+        - if [ ! -d $APP_DIR_STORAGE ]; then mkdir $APP_DIR_STORAGE ; fi
+        - if [ ! -d $APP_DIR_STORAGE/app ]; then mkdir $APP_DIR_STORAGE/app ; fi
+        - if [ ! -d $APP_DIR_STORAGE/app/public ]; then mkdir $APP_DIR_STORAGE/app/public ; fi
+        - if [ ! -d $APP_DIR_STORAGE/session ]; then mkdir $APP_DIR_STORAGE/session ; fi
+        - if [ ! -d $APP_DIR_STORAGE/framework ]; then mkdir $APP_DIR_STORAGE/framework ; fi
+        - if [ ! -d $APP_DIR_STORAGE/framework/cache ]; then mkdir $APP_DIR_STORAGE/framework/cache ; fi
+        - if [ ! -d $APP_DIR_STORAGE/framework/cache/data ]; then mkdir $APP_DIR_STORAGE/framework/cache/data ; fi
+        - if [ ! -d $APP_DIR_STORAGE/framework/sessions ]; then mkdir $APP_DIR_STORAGE/framework/sessions ; fi
+        - if [ ! -d $APP_DIR_STORAGE/framework/views ]; then mkdir $APP_DIR_STORAGE/framework/views ; fi
+        - if [ ! -d $APP_DIR_STORAGE/logs ]; then mkdir $APP_DIR_STORAGE/logs ; fi
+        - cp $APP_DIR/storage/ $APP_DIR_STORAGE  -r || true
+        - rm -rf $APP_DIR/*
+        - cp $NEW_RELEASE_DIR/. $APP_DIR -rf
+        - mv $APP_DIR_STORAGE $APP_DIR/storage 
+        
+        # get version tag from portal repository
+        - 'VERSION_TAG=$(curl -Ss --request GET --header "PRIVATE-TOKEN: $PORTAL_APPS_SCIENCE_ACCESS_TOKEN" https://gitlab.uottawa.ca/api/v4/projects/1078/repository/tags | docker run --rm -i imega/jq -r ".[0] | .name")'
+        - echo $VERSION_TAG
+
+        # stop stack if exist and wait
+        - RM_STACK=$(docker stack rm $STACK_NAME);
+        - (if [ "$RM_STACK" ]; then sleep 30; fi);
+        
+        
+        # create secret (example)
+        - docker secret rm PORTAL_TEMPLATE_DB_DATABASE || true
+        - printf $PORTAL_TEMPLATE_DB_DATABASE | docker secret create PORTAL_TEMPLATE_DB_DATABASE - 
+        - docker secret rm PORTAL_TEMPLATE_DB_USERNAME || true
+        - printf $PORTAL_TEMPLATE_DB_USERNAME | docker secret create PORTAL_TEMPLATE_DB_USERNAME - 
+        - docker secret rm PORTAL_TEMPLATE_DB_PASSWORD || true
+        - echo $PORTAL_TEMPLATE_DB_PASSWORD | docker secret create PORTAL_TEMPLATE_DB_PASSWORD - 
+        - docker secret rm PORTAL_TEMPLATE_DB_MIGRATION_USERNAME || true
+        - printf $PORTAL_TEMPLATE_DB_MIGRATION_USERNAME | docker secret create PORTAL_TEMPLATE_DB_MIGRATION_USERNAME - 
+        - docker secret rm PORTAL_TEMPLATE_DB_MIGRATION_PASSWORD || true
+        - echo $PORTAL_TEMPLATE_DB_MIGRATION_PASSWORD | docker secret create PORTAL_TEMPLATE_DB_MIGRATION_PASSWORD - 
+        - docker secret rm PORTAL_TEMPLATE_APP_DIR || true
+        - echo $PORTAL_TEMPLATE_APP_DIR | docker secret create PORTAL_TEMPLATE_APP_DIR - 
+        - docker secret rm PORTAL_TEMPLATE_LOG_TEAMS || true
+        - echo $PORTAL_TEMPLATE_LOG_TEAMS | docker secret create PORTAL_TEMPLATE_LOG_TEAMS -  
+
+        # check secret list
+        - docker secret ls
+        
+        # docker login to pull needed images
+        - docker login gitlab.uottawa.ca:4567 -u portal-deploy-token -p $PORTAL_DEPLOY_TOKEN
+        # deploy Docker Swarm 
+        - cd /srv/portal-apps-science
+        - export IMAGE_TAG=$VERSION_TAG
+        - echo $IMAGE_TAG
+        - if [ "$ENV" == "PROD" ]; then docker stack deploy --with-registry-auth --compose-file docker-compose-swarm.yml -c docker-compose-swarm.server.yml $STACK_NAME; else echo "Deploy not PROD"; fi
+        - if [ "$ENV" == "QA" ]; then docker stack deploy --with-registry-auth --compose-file docker-compose-swarm.yml -c docker-compose-swarm.server.yml $STACK_NAME; else echo "Deploy not QA"; fi
+        # check deployment
+        - docker stack services $STACK_NAME
+        - docker ps
+        # check network
+        - docker network ls
+        - sleep 90
+        
+        # restart workers, clear cache/config, run migratation 
+        - CONTAINER_ID=$(docker ps --filter name=portal_php-fpm -q)
+        - docker container exec $(docker ps --filter name=portal_php-worker -q) supervisorctl stop all
+        - docker container exec $CONTAINER_ID chmod 755 /var/www/uottawa-template/startup-deploy.sh
+        - docker container exec $CONTAINER_ID /var/www/uottawa-template/startup-deploy.sh
+        
+        # portal migration and clear cache 
+        - docker container exec $CONTAINER_ID chmod 755 /opt/startup-deploy.sh
+        - docker container exec $CONTAINER_ID /opt/startup-deploy.sh
+        - docker container exec $(docker ps --filter name=portal_php-worker -q) supervisorctl start all
+
+deploy to qa reload:
+    variables:
+        ENV: QA
+    stage: deploy_qa
+    tags: [deployqa]
+    before_script:
+        - export APP_FOLDER=$(echo /srv/$CI_PROJECT_NAME)
+        - export STACK_NAME=portal
+        - export RELEASES_DIR='/var/www/release/uottawa-template/';
+        - export APP_DIR='/var/www/sites/uottawa-template';
+        - export APP_DIR_STORAGE='/var/www/sites/uottawa-template_storage';
+        - export NEW_RELEASE_DIR=$(echo $RELEASES_DIR$(date +"%Y%m%d.%H%M").$CI_COMMIT_TAG); 
+    <<: *deploy_reload_definition
+    environment:
+        name: QA
+    when: manual
+    only: 
+        - tags
+    except:
+        - schedules
+        
+deploy to qa restart:
+    variables:
+        ENV: QA
+    stage: deploy_qa
+    tags: [deployqa]
+    before_script:
+        - export APP_FOLDER=$(echo /srv/$CI_PROJECT_NAME)
+        - export STACK_NAME=portal
+        - export RELEASES_DIR='/var/www/release/uottawa-template/';
+        - export APP_DIR='/var/www/sites/uottawa-template';
+        - export APP_DIR_STORAGE='/var/www/sites/uottawa-template_storage';
+        - export NEW_RELEASE_DIR=$(echo $RELEASES_DIR$(date +"%Y%m%d.%H%M").$CI_COMMIT_TAG);
+    <<: *deploy_restart_definition
+    environment:
+        name: QA
+    when: manual
+    only: 
+        - tags
+    except:
+        - schedules
+
+deploy to production reload:
+    variables:
+        ENV: PROD
+    stage: deploy_prod
+    tags: [deployprod]
+    before_script:
+        - export APP_FOLDER=$(echo /srv/$CI_PROJECT_NAME)
+        - export STACK_NAME=portal
+        - export RELEASES_DIR='/var/www/release/uottawa-template/';
+        - export APP_DIR='/var/www/sites/uottawa-template';
+        - export APP_DIR_STORAGE='/var/www/sites/uottawa-template_storage';
+        - export NEW_RELEASE_DIR=$(echo $RELEASES_DIR$(date +"%Y%m%d.%H%M").$CI_COMMIT_TAG); 
+    <<: *deploy_reload_definition
+    environment:
+        name: PROD
+    when: manual
+    only: 
+        - tags
+    except:
+        - schedules
+        
+deploy to production restart:
+    variables:
+        ENV: PROD
+    stage: deploy_prod
+    tags: [deployprod]
+    before_script:
+        - export APP_FOLDER=$(echo /srv/$CI_PROJECT_NAME)
+        - export STACK_NAME=portal
+        - export RELEASES_DIR='/var/www/release/uottawa-template/';
+        - export APP_DIR='/var/www/sites/uottawa-template';
+        - export APP_DIR_STORAGE='/var/www/sites/uottawa-template_storage';
+        - export NEW_RELEASE_DIR=$(echo $RELEASES_DIR$(date +"%Y%m%d.%H%M").$CI_COMMIT_TAG);
+    <<: *deploy_restart_definition
+    environment:
+        name: PROD
+    when: manual
+    only: 
+        - tags
+    except:
+        - schedules
+       
+# Not enabled yet in gitlab    
+.pages:
+  stage: report
+  #dependencies:
+  #  - ...
+  allow_failure: true
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - mkdir public
+    - cp *.json public/ || true
+    - cp *.html public/ || true
+  artifacts:
+    paths:
+      - public
+    expire_in: 3 days
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'    
+      when: never
+    - if: $CI_COMMIT_BRANCH

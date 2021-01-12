@@ -1,0 +1,667 @@
+.div-inline{display:inline-block;}
+
+.sidebar-mini.sidebar-collapse .main-sidebar .container-fluid {
+    display: none !important;
+    -webkit-transform: translateZ(0);
+  }
+  
+  .submit-overlay {
+    position: fixed;
+    z-index: 10000;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0);
+}
+
+
+@media (max-width: 867px) {
+  .search_form_navbar {
+    display: none;
+  }
+  
+  .hide_on_mobile{
+    display: none !important;
+  }
+  
+  .hide_on_desktop {
+    display: inline-block;
+  }
+  
+  .logo {
+    display: none !important;
+  }
+
+  .sidebar-show .sidebar {
+      background-color: #495057 !important;
+  }
+  
+  .sidebar .sidebar-nav, .sidebar .sidebar-scroll {
+      background-color: #495057 !important;
+  }
+  
+  .font-size-title {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 868px) {
+  .hide_on_mobile{
+    display: inline-block;
+  }
+  
+  .hide_on_desktop {
+    display: none !important;
+  }
+  
+  .font-size-title {
+    font-size: 18px;
+  }
+}
+
+body {
+	/*font-size: 175%;*/
+  font-size: large;
+}
+
+.app-body {
+  font-size: 20px;
+}
+
+@media print
+{    
+    .no-print, .no-print *
+    {
+        display: none !important;
+    }
+    
+    .table-margin-deposit-receipt {
+      margin-top: 75px;
+    }
+    
+    .fixed-width-25p {
+      width: 25%;
+    }
+    
+    .fixed-width-50p {
+      width: 50%;
+    }
+    
+    .fixed-width-75p {
+      width: 75%;
+    }
+    
+    .fixed-width-200 {
+      width: 200px;
+    }
+    
+    textarea { 
+      border-style: none; 
+      border-color: Transparent; 
+      overflow: auto;  
+      resize: none !important;
+    }
+    
+    .table-borderless th,
+    .table-borderless td,
+    .table-borderless thead th,
+    .table-borderless tbody + tbody {
+      border: 0 !important;
+    }
+    
+}
+
+/* Some theme override*/
+
+.table-layout-fixed {
+  overflow-wrap: break-word;
+}
+
+.table-access-list {
+    background-color: aliceblue;
+}
+
+.table td, .table th {
+    padding: .25rem;
+}
+
+@media (min-width: 768px) {
+  .table-layout-fixed {
+    table-layout: fixed;
+  }
+  
+  .one-word-line {
+    word-spacing: 30000px;
+  }
+  
+  .fixed-width-20 {
+    width: 25px;
+  }
+  
+  .fixed-width-35 {
+    width: 35px;
+  }
+  
+  .fixed-width-75 {
+    width: 75px;
+  }
+  
+  .fixed-width-90 {
+    width: 90px;
+  }
+  
+  .fixed-width-95 {
+    width: 95px;
+  }
+  
+  .fixed-width-140 {
+    width: 140px;
+  }
+  
+  .fixed-width-160 {
+    width: 160px;
+  }
+  
+  .fixed-width-120 {
+    width: 140px;
+  }
+  
+  .fixed-width-125 {
+    width: 125px;
+  }
+  
+  .fixed-width-150 {
+    width: 150px;
+  }
+  
+  .fixed-width-175 {
+    width: 175px;
+  }
+  
+  .fixed-width-200 {
+    width: 200px;
+  }
+  
+  .fixed-width-300 {
+    width: 300px;
+  }
+  
+  .fixed-width-25p {
+    width: 25%;
+  }
+  
+  .fixed-width-50p {
+    width: 50%;
+  }
+  
+  .fixed-width-75p {
+    width: 75%;
+  }
+  
+  .table-margin-deposit-receipt {
+    margin-top: 75px;
+  }
+  
+  .table-borderless th,
+  .table-borderless td,
+  .table-borderless thead th,
+  .table-borderless tbody + tbody {
+    border: 0 !important;
+  }
+
+  .nav-item {
+    padding-right: 10px;
+  }
+  
+  .logo-lg {
+    text-align: center;
+    line-height: 20px;
+  }
+  
+  .bg-light {
+    background-color: #222d32!important;
+  }
+  
+  .app-header.bg-light .navbar-brand {
+    /*padding: 0 1.25rem;*/
+    background-color: #8f001a !important;
+    color: #ffffff;
+    justify-content: center;
+    opacity: 0.8;
+    min-width: 270px;
+  }
+  
+  .form-group {
+     margin-bottom: 0;
+  }
+  
+  .app-header {
+    background-color: #8f001a !important;
+  }
+  
+  .navbar-nav .nav-link {
+    color: #ffffff;
+  }
+  
+  .dropdown-toggle {
+    color: #000000 !important;
+  }
+    
+ /* .navbar-nav .nav-link {
+    color: #73818f !important;
+  }*/
+}
+
+.sidebar {
+  min-width: 270px;
+  font-size: 85%;
+}
+
+.app-header .nav-item {
+  min-width: 30px;
+  padding-right: 10px;
+  color: #ffffff;
+}
+
+html:not([dir=rtl]) .sidebar {
+    margin-left: -270px;
+}
+
+.sidebar-pills a:not(.active), .sidebar-pills a:not(.open), .sidebar-pills a:not(:active), .sidebar-pills a:not(:focus), .sidebar-pills a:not(:hover), .sidebar-pills li {
+    color: #b8c7ce!important;
+}
+
+.sidebar .sidebar-nav, .sidebar .sidebar-scroll {
+    position: relative;
+    flex: 1;
+    width: 100%;
+}
+
+.sidebar-pills .nav-link.active, .sidebar-pills .nav-link:hover {
+    background: rgba(0,0,0,.3)!important;
+}
+
+hr {
+    width: 100%;
+    border-top-color: #ffffff;
+}
+
+.card-body-1 hr {
+    border-top: 1px solid rgba(0,0,0,.1);
+}
+
+.ps__rail-y {
+  display: none !important;
+}
+
+.sidebar .nav {
+    width: 260px;
+}
+
+.container-fluid {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 0px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.main .container-fluid {
+    padding: 0 15px;
+}
+
+.content-header {
+    padding: 35px 15px 0px 15px;
+}
+
+.sidebar .nav-link .nav-icon {
+    margin: 0 .3rem 0 0;
+}
+
+.sidebar.sidebar-pills .nav-link, .sidebar.sidebar-pills .nav-title {
+    padding: .5rem 0rem .5rem 0.7rem;
+}
+
+.box-body {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    padding: 10px;
+    background-color: #ffffff;
+}
+
+.user-panel {
+    /*padding: 20px 0px 20px 0px;*/
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    /*white-space: nowrap;*/
+    min-height: 110px;
+}
+
+@media only screen and (max-width: 767px)  {
+  
+  .logo-lg {
+    display:none;
+  }
+
+	/* Force table to not be like tables anymore */
+	.table-show-access-person table, .table-access-request table, thead, tbody, th, td, tr { 
+		display: block; 
+	}
+	
+	/* Hide table headers (but not display: none;, for accessibility) */
+	.table-show-access-person thead tr, .table-access-request thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+	
+	.table-show-access-person tr, .table-access-request tr { border: 1px solid #ccc; }
+	
+	.table-show-access-person td, .table-access-request td { 
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee; 
+		position: relative;
+		padding-left: 50% !important; 
+	}
+	
+	.table-show-access-person td:before, .table-access-request td:before { 
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 6px;
+		left: 6px;
+		width: 45%; 
+		padding-right: 10px; 
+		white-space: nowrap;
+	}
+	
+	/*
+	Label the data
+	*/
+  /* Table in dashboard card operator */
+	.table-access-request td:nth-of-type(1):before { content: "#"; }
+	.table-access-request td:nth-of-type(2):before { content: "Person"; }
+	.table-access-request td:nth-of-type(3):before { content: "Access status"; }
+	.table-access-request td:nth-of-type(4):before { content: "Card number"; }
+	.table-access-request td:nth-of-type(5):before { content: "Card statusW"; }
+	.table-access-request td:nth-of-type(6):before { content: "Room/Area name"; }
+	.table-access-request td:nth-of-type(7):before { content: "Extended hours"; }
+	.table-access-request td:nth-of-type(8):before { content: "Requested by"; }
+	.table-access-request td:nth-of-type(9):before { content: "Need approval by"; }
+	.table-access-request td:nth-of-type(10):before { content: "Requested On"; }
+  .table-access-request td:nth-of-type(11):before { content: "Approval Status"; }
+  /* Hide first line */
+  .table-access-request .info td:nth-of-type(1):before { content: ""; display: none;}
+	.table-access-request .info td:nth-of-type(2):before { content: ""; height: 50px; }
+  /* Hide second line */
+  .table-access-request .info td:nth-of-type(1) {  display: none;}
+	.table-access-request .info td:nth-of-type(2) {  height: 50px; }
+  
+  /* Table in show-person template */
+  .table-show-access-person td:nth-of-type(1):before { content: "Access id#"; }
+	.table-show-access-person td:nth-of-type(2):before { content: "Access status"; }
+	.table-show-access-person td:nth-of-type(3):before { content: "Key / Card"; }
+	/*.table-show-access-person td:nth-of-type(4):before { content: "Room/Area #id"; }*/
+	.table-show-access-person td:nth-of-type(4):before { content: "Room/Area name"; }
+	.table-show-access-person td:nth-of-type(5):before { content: "Requested by"; }
+	.table-show-access-person td:nth-of-type(6):before { content: "Need approval by"; }
+	.table-show-access-person td:nth-of-type(7):before { content: "Requested On"; }
+	.table-show-access-person td:nth-of-type(8):before { content: "Approval Status"; }
+  .table-show-access-person th { display:none; }
+  
+  
+  .app-header .nav-item {
+    color: #73818f;
+  }
+  
+  .content-header {
+    padding: 0px 15px 0px 15px;
+  }
+  
+  
+  /* Force table to not be like tables anymore */
+	.no-more-tables table, 
+	.no-more-tables thead, 
+	.no-more-tables tbody, 
+	.no-more-tables th, 
+	.no-more-tables td, 
+	.no-more-tables tr { 
+		display: block; 
+	}
+ 
+	/* Hide table headers (but not display: none;, for accessibility) */
+	.no-more-tables thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+ 
+	.no-more-tables tr { 
+    /*border: 1px solid #ccc; */
+    border: none;
+  }
+ 
+	.no-more-tables td { 
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee; 
+		position: relative;
+		/*padding-left: 40% !important; */
+    padding-left: var(--padding) !important; 
+		white-space: normal;
+		text-align:left;
+    /*left: 4px;*/
+    margin-left: 4px;
+    margin-right: 4px;
+	}
+ 
+	.no-more-tables td:before { 
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		/*top: 0px;*/
+		left: 0px;
+		width: 35%; 
+		padding-right: 10px; 
+		white-space: nowrap;
+		text-align:left;
+		font-weight: bold;
+	}
+  
+  .mobile-hidder {
+    border:none !important;
+    background-color:white !important;
+  }
+ 
+	/*
+	Label the data
+	*/
+	.no-more-tables td:before { 
+    content: attr(data-title); 
+  }
+  
+  .mobile-padding {
+    display: block;
+    padding-bottom: 15px;
+  }
+  
+  .navbar-brand {
+    font-size: 16px;
+  }
+
+}
+
+.form-inline {
+  display: block;
+}
+
+.app-footer {
+  background-color: #8f001a
+}
+
+.card-header {
+  background-color: #f0f3f9;
+}
+
+.dataTables_wrapper .dataTables_length select {
+    min-width: 55px;
+}
+
+.text-muted {
+    color: #000000!important;
+}
+.access-group-label {
+  display: inline !important;
+}
+
+@media (min-width: 576px){
+  .form-inline .form-group, .form-inline label {
+      display: inline !important;
+  }
+}
+
+.table-groups {
+  width: 450px;
+}
+
+.well-history {
+  width: 475px;
+  padding: 10px;
+  border: 1px solid #000000;
+  background-color: aliceblue;
+  position: absolute;
+}
+
+.well-deposit {
+    width: 700px;
+    padding: 10px;
+    border: 1px solid #000000;
+    position: absolute;
+    font-size: medium;
+    background-color: aliceblue;
+    margin-top: 10px;
+}
+
+.badge-secondary{color:#23282c;background-color:#c8ced3}
+.badge-success{color:#fff;background-color:#4dbd74}
+.badge-info{color:#23282c;background-color:#63c2de}
+.badge-warning{color:#23282c;background-color:#ffc107}
+.badge-danger{color:#fff;background-color:#cd201f}
+
+
+.navbar-custom-menu>.navbar-nav>li {
+  font-size: 90%;
+}
+
+.skin-red .main-header .navbar .sidebar-toggle {
+  font-size: 80%;
+}
+
+@media (min-width: 767px) {
+  .main-sidebar {
+    width: 270px;
+  }
+
+  .content-wrapper, .main-footer {
+    margin-left: 270px;
+  }
+}
+
+.user-panel>.image>img {
+    max-width: 30px;
+}
+
+.user-panel>.info {
+    left: 35px;
+    padding: 5px 5px 5px 5px;
+    line-height: 1;
+    position: absolute;
+    
+    
+}
+
+.info> p{
+    margin-bottom: 0.2rem;
+}
+
+.pull-left {
+    float: left!important;
+}
+
+.div-inline {
+  display:inline-block;
+}
+
+a:hover {
+  cursor:pointer;
+ }
+ 
+.icon-orange {
+   color: orange;
+}
+
+.icon-red {
+   color: red;
+}
+
+.icon-green {
+   color: green;
+}
+
+.p-table {
+  display: block;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.btn {
+    padding: 0px 5px;
+}
+
+.breadcrumb {
+  display:none;
+}
+
+
+/* uOttawa custom */
+
+.app-header.bg-light .navbar-brand {
+    width: 250px;
+    justify-content: left;
+    padding: 0 2.25rem;
+    color: #ffffff;
+    font-size: 1.4rem;
+    opacity: 0.6;
+}
+
+.sidebar.sidebar-pills .nav-link.active, .sidebar.sidebar-pills .nav-link:hover {
+    color: #ffffff!important;
+}
+
+.sidebar.sidebar-pills .nav-link.active .nav-icon, .sidebar.sidebar-pills .nav-link:hover .nav-icon {
+    color: #ffffff!important;
+}
+
+.sidebar-pills a:not(.active), .sidebar-pills a:not(.open), .sidebar-pills a:not(:active), .sidebar-pills a:not(:focus), .sidebar-pills a:not(:hover), .sidebar-pills li {
+    color: #000000!important;
+}
+
+.sidebar .nav-link .nav-icon {
+    display: inline-block;
+    width: 1.25rem;
+    margin: 0 .5rem 0 0;
+    font-size: 1rem;
+    color: #000000!important;
+    text-align: center;
+}
+
+.bg-light {
+    background-color: #a11918!important;
+}

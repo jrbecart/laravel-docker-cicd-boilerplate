@@ -1,0 +1,145 @@
+@page {
+  sheet-size: Letter-L;
+  resetpagenum: 1;
+  background-color: white;
+  margin:0px;
+}
+
+.outer {
+  display: table;
+  position: absolute;
+  top: 0;
+  left: 3in;
+  height: 100%;
+  width: 100%;
+}
+
+.middle {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.text-paragraph {
+  position: relative;
+  padding-top: -0.9in
+}
+
+.title {
+  position: relative;
+  left: 1in;
+  width: 6in;
+	text-align:center;
+	font-size:22pt;
+	font-family:"Times New Roman";
+}
+
+.sub {
+  position: relative;
+  padding-top: 0.5in;
+  left: 1in;
+  width: 6in;   
+	text-align:center;
+	font-size:18pt;
+	font-family:"Times New Roman";
+}
+
+.fname {
+  padding-top: 0.6in;
+  width: 8in;   
+	text-align:center;
+	font-size:36pt;
+	/*font-family:"Times New Roman";*/
+  /*font-weight:bold;*/
+  font-family: 'Noto Sans', sans-serif;
+}
+
+.department {
+  position: relative;
+  padding-top: 0.1in;
+  left: 1in;
+  width: 6in;   
+	text-align:center;
+	font-size:13pt;
+	font-family:"Times New Roman";
+}
+
+.honor {
+  position: relative;
+  padding-top: 0.3in;
+  left: 1in;
+  width: 6in;   
+	text-align:center;
+	font-size:36pt;
+	font-family:"Times New Roman";
+	font-weight:bold;
+}
+
+.term {
+  position: relative;
+  padding-top: 0.1in;
+  left: 1in;
+  width: 6in;   
+	text-align:center;
+	font-size:22pt;
+	font-family:"Times New Roman";
+}
+
+.sig {
+  position: absolute;
+	top: 7.5in;
+	left: 0.8in;
+  width: 3in;   
+	text-align:center;
+	font-size:11pt;
+	font-family:Calibri;
+	border-top:1px solid ;
+}
+
+.sig-image {
+  position: absolute;
+	top: 6.68in;
+	left: 1.1in;
+  width: 205px;   
+	height: 55px;
+	background-image:url(../images/sig_lb.jpg);
+}
+
+.logo {
+  position: absolute;
+	top: 0.66in;
+	left: 0.66in;
+  width: 197px;   
+	height: 244px;
+	background-image:url(../images/logo2.png);
+	background-size:     cover;        
+  background-repeat:   no-repeat;
+  background-position: center center;
+}
+
+.foot {
+  position: absolute;
+	top: 8.17in;
+	left: 0in;
+  width: 11in;   
+	height: 0.33in;
+	background-color:#B5A192;
+}
+
+.foot2 {
+  position: absolute;
+	top: 8.17in;
+	left: 7in;
+  width: 4in;
+	height: 0.33in;
+	background-color:#912933;
+}
+
+.woosh {
+	position: absolute;
+	top: 8.17in;
+	left: 6.95in;
+	width: 0.92in;
+	height: 0.33in;
+	z-index: 5;
+	background-image:url(../images/swoosh.png);
+}

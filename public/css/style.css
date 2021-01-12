@@ -1,0 +1,110 @@
+html, body {
+    background-color: #fff;
+    color: #636b6f;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 200;
+    height: 100vh;
+    margin: 0;
+}
+
+body {
+    font-size: 16px !important;
+    padding-top: 0 !important;
+    -webkit-font-smoothing: antialiased !important;
+}
+
+.full-height {
+    height: 100vh;
+}
+
+.flex-center {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.position-ref {
+    position: relative;
+}
+
+.top-right {
+    position: absolute;
+    right: 10px;
+    top: 18px;
+}
+
+.content {
+    text-align: center;
+    position: relative;
+}
+
+.content-list {
+    text-align: center;
+    position: relative;
+    top: 80px;
+}
+
+.title {
+    font-size: 84px;
+}
+
+.links > a {
+    color: #636b6f;
+    padding: 0 5px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .1rem;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.m-b-md {
+    margin-bottom: 30px;
+}
+
+@media (min-width: 736px)  {
+  #uottawa-logo {
+      width: 150px;
+  }
+}
+
+#uottawa-logo {
+    display: inline-block;
+    margin-top: 10px;
+    height: 50px;
+    z-index: 100;
+}
+
+#app-name {
+    display: inline-block;
+    padding-top: 6px;
+    vertical-align: middle;
+ 
+}
+
+.navbar-default {
+    background-color: #8F001A !important;
+}
+
+.navbar-default .navbar-brand {
+    color: #fff !important;
+}
+
+.navbar-default .navbar-nav>li>a {
+    color: #fff;
+}
+
+.navbar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand {
+    margin-left: 0 !important; 
+}
+
+.navbar-brand {
+    float: none !important; 
+}
+
+@media (min-width: 768px) {
+  .navbar-nav>li>a {
+      padding-top: 21px;
+      padding-bottom: 15px;
+  }
+}
